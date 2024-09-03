@@ -63,7 +63,7 @@ public abstract class Mapper implements ToXContentFragment, Iterable<Mapper> {
     // Since the only valid option is to track array source by default, we use a boolean index setting for it.
     public static final Setting<Boolean> STORE_ARRAY_SOURCE_SETTING = Setting.boolSetting(
         "index.mapping.store_array_source",
-        false,
+        true,
         Setting.Property.IndexScope,
         Setting.Property.ServerlessPublic
     );
