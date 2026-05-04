@@ -614,7 +614,7 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
     }
 
     protected String allIndexPattern() {
-        return "%mode%*";
+        return "%mode%--*";
     }
 
     public void testRow() throws IOException {
@@ -798,7 +798,7 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
     protected static String indexName(IndexMode mode, String nodeName) {
         String indexName = mode.toString();
         if (nodeName != null) {
-            indexName += "_" + nodeName.toLowerCase(Locale.ROOT);
+            indexName += "--" + nodeName.toLowerCase(Locale.ROOT);
         }
         return indexName;
     }

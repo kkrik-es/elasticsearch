@@ -343,7 +343,7 @@ public final class TextFieldMapper extends FieldMapper {
             this.norms = Parameter.normsParam(m -> ((TextFieldMapper) m).norms, () -> {
                 if (indexCreatedVersion.onOrAfter(IndexVersions.DISABLE_NORMS_BY_DEFAULT_FOR_LOGSDB_AND_TSDB)) {
                     // don't enable norms by default if the index mode is columnar.
-                    return !indexMode.isColumnar();
+                    return indexMode == null || !indexMode.isColumnar();
                 }
                 // bwc - historically, norms were enabled by default on text fields regardless of which index mode was used
                 return true;
