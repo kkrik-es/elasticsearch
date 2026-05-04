@@ -751,7 +751,10 @@ public class SourceFieldMapperTests extends MetadataMapperTestCase {
                 .put(IndexSettings.INDEX_MAPPER_SOURCE_MODE_SETTING.getKey(), SourceFieldMapper.Mode.DISABLED)
                 .build();
             var ex = expectThrows(MapperParsingException.class, () -> createMapperService(settings, mappings));
-            assertEquals("Failed to parse mapping: _source can not be disabled in index using [columnar_logsdb] index mode", ex.getMessage());
+            assertEquals(
+                "Failed to parse mapping: _source can not be disabled in index using [columnar_logsdb] index mode",
+                ex.getMessage()
+            );
         }
 
         // Test for IndexMode.TIME_SERIES
