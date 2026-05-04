@@ -1202,7 +1202,7 @@ public class IndexSettingsTests extends ESTestCase {
     public void testDisableSequenceNumbersRequiresDocValuesOnlyForNonStandardModes() {
         IndexVersion indexVersion = IndexVersionUtils.randomVersionBetween(IndexVersions.DISABLE_SEQUENCE_NUMBERS, IndexVersion.current());
 
-        IndexMode mode = randomFrom(IndexMode.TIME_SERIES, IndexMode.LOGSDB);
+        IndexMode mode = randomFrom(IndexMode.TIME_SERIES, IndexMode.LOGSDB, IndexMode.COLUMNAR_LOGSDB, IndexMode.COLUMNAR);
         Settings.Builder builder = Settings.builder()
             .put(IndexSettings.MODE.getKey(), mode.getName())
             .put(IndexSettings.SEQ_NO_INDEX_OPTIONS_SETTING.getKey(), SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES)

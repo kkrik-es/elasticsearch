@@ -848,16 +848,17 @@ public final class IndexSettings {
 
     public static final Setting<Boolean> USE_DOC_VALUES_SKIPPER = Setting.boolSetting("index.mapping.use_doc_values_skipper", s -> {
         IndexVersion iv = SETTING_INDEX_VERSION_CREATED.get(s);
-        if (MODE.get(s) == IndexMode.TIME_SERIES) {
+        var indexMode = MODE.get(s);
+        if (indexMode == IndexMode.TIME_SERIES) {
             if (iv.onOrAfter(IndexVersions.STATELESS_SKIPPERS_ENABLED_FOR_TSDB)) {
                 return "true";
             }
             return "false";
-        } else if (MODE.get(s) == IndexMode.LOGSDB) {
-            return iv.onOrAfter(IndexVersions.SKIPPERS_ENABLED_BY_DEFAULT_IN_LOGSDB) ? "true" : "false";
-        } else {
-            return "false";
         }
+        if (indexMode == IndexMode.LOGSDB || indexMode == IndexMode.COLUMNAR || indexMode == IndexMode.COLUMNAR_LOGSDB) {
+            return iv.onOrAfter(IndexVersions.SKIPPERS_ENABLED_BY_DEFAULT_IN_LOGSDB) ? "true" : "false";
+        }
+        return "false";
     }, Property.IndexScope, Property.Final);
 
     public static final Setting<SourceFieldMapper.Mode> INDEX_MAPPER_SOURCE_MODE_SETTING = Setting.enumSetting(
@@ -934,7 +935,7 @@ public final class IndexSettings {
                 return Boolean.FALSE.toString();
             }
             var indexMode = IndexSettings.MODE.get(settings);
-            return Boolean.toString(indexMode.useTimeSeriesDocValuesCodec());
+            return Boolean.toString(indexMode.isColumnar());
         },
         Property.IndexScope,
         Property.Final
@@ -979,7 +980,7 @@ public final class IndexSettings {
             return Boolean.FALSE.toString();
         }
         IndexMode indexMode = IndexSettings.MODE.get(settings);
-        return Boolean.toString(indexMode.useEs812PostingsFormat());
+        return Boolean.toString(indexMode.isColumnar());
     }, Property.IndexScope, Property.Final);
 
     /**
@@ -1043,8 +1044,7 @@ public final class IndexSettings {
                 return SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY.toString();
             }
             final IndexMode indexMode = IndexSettings.MODE.get(settings);
-            if ((indexMode == IndexMode.LOGSDB || indexMode == IndexMode.TIME_SERIES)
-                && (indexVersionCreated.onOrAfter(IndexVersions.SEQ_NO_WITHOUT_POINTS) || indexVersionCreated.equals(IndexVersions.ZERO))) {
+            if (indexModeSupportsSeqNoDocValuesOnly(indexMode, indexVersionCreated)) {
                 return SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY.toString();
             }
             return SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES.toString();
@@ -1054,6 +1054,14 @@ public final class IndexSettings {
         Property.IndexScope,
         Property.Final
     );
+
+    static boolean indexModeSupportsSeqNoDocValuesOnly(IndexMode indexMode, IndexVersion indexVersionCreated) {
+        if (indexMode == IndexMode.COLUMNAR || indexMode == IndexMode.COLUMNAR_LOGSDB) {
+            return true;
+        }
+        return (indexMode == IndexMode.LOGSDB || indexMode == IndexMode.TIME_SERIES)
+            && (indexVersionCreated.onOrAfter(IndexVersions.SEQ_NO_WITHOUT_POINTS) || indexVersionCreated.equals(IndexVersions.ZERO));
+    }
 
     public static final Setting<Boolean> INDEX_MAPPING_EXCLUDE_SOURCE_VECTORS_SETTING = Setting.boolSetting(
         "index.mapping.exclude_source_vectors",

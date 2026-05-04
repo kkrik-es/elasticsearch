@@ -91,6 +91,22 @@ public class IndexCommitTimestampFieldRangeTests extends MapperServiceTestCase {
         testFieldValueRange(false, IndexMode.LOOKUP);
     }
 
+    public void testFieldValueRangeForColumnarModeWithCFS() throws Exception {
+        testFieldValueRange(true, IndexMode.COLUMNAR);
+    }
+
+    public void testFieldValueRangeForColumnarModeNoCFS() throws Exception {
+        testFieldValueRange(false, IndexMode.COLUMNAR);
+    }
+
+    public void testFieldValueRangeForColumnarLogsdbModeWithCFS() throws Exception {
+        testFieldValueRange(true, IndexMode.COLUMNAR_LOGSDB);
+    }
+
+    public void testFieldValueRangeForColumnarLogsdbModeNoCFS() throws Exception {
+        testFieldValueRange(false, IndexMode.COLUMNAR_LOGSDB);
+    }
+
     public void testSoftDeletesAreAlmostAlwaysDisregardedForTimestampRange() throws Exception {
         IndexMode indexMode = randomFrom(IndexMode.values());
         DocumentMapper mapper = getDocumentMapper(indexMode);
@@ -329,9 +345,10 @@ public class IndexCommitTimestampFieldRangeTests extends MapperServiceTestCase {
 
     private void deleteDoc(String docIdToDelete, IndexWriter indexWriter, IndexMode indexMode) throws IOException {
         var deletedDoc = ParsedDocument.deleteTombstone(
-            indexMode == IndexMode.TIME_SERIES || indexMode == IndexMode.LOGSDB
-                ? SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY
-                : SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES,
+            indexMode == IndexMode.TIME_SERIES || indexMode == IndexMode.LOGSDB || indexMode == IndexMode.COLUMNAR
+                || indexMode == IndexMode.COLUMNAR_LOGSDB
+                    ? SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY
+                    : SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES,
             docIdToDelete
         ).docs().get(0);
         var softDeletesField = Lucene.newSoftDeletesField();

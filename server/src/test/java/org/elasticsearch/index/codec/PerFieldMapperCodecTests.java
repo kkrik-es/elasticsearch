@@ -165,12 +165,34 @@ public class PerFieldMapperCodecTests extends ESTestCase {
 
         perFieldMapperCodec = createFormatSupplier(false, true, IndexMode.TIME_SERIES, MAPPING_1);
         assertThat(perFieldMapperCodec.getPostingsFormatForField("gauge"), instanceOf(ES812PostingsFormat.class));
+
+        // Columnar index mode
+        // by default, columnar uses the ES 8.12 postings format
+        perFieldMapperCodec = createFormatSupplier(false, false, IndexMode.COLUMNAR, MAPPING_3);
+        assertThat(perFieldMapperCodec.getPostingsFormatForField("message"), instanceOf(ES812PostingsFormat.class));
+
+        perFieldMapperCodec = createFormatSupplier(false, true, IndexMode.COLUMNAR, MAPPING_3);
+        assertThat(perFieldMapperCodec.getPostingsFormatForField("message"), instanceOf(ES812PostingsFormat.class));
+
+        // Columnar LogsDB index mode
+        // by default, columnar_logsdb uses the ES 8.12 postings format
+        perFieldMapperCodec = createFormatSupplier(false, false, IndexMode.COLUMNAR_LOGSDB, MAPPING_3);
+        assertThat(perFieldMapperCodec.getPostingsFormatForField("message"), instanceOf(ES812PostingsFormat.class));
+
+        perFieldMapperCodec = createFormatSupplier(false, true, IndexMode.COLUMNAR_LOGSDB, MAPPING_3);
+        assertThat(perFieldMapperCodec.getPostingsFormatForField("message"), instanceOf(ES812PostingsFormat.class));
     }
 
     public void testUseEs812PostingsFormatForIdField() throws IOException {
         int numIterations = randomIntBetween(2, 64);
         for (int i = 0; i < numIterations; i++) {
-            var indexMode = randomFrom(IndexMode.STANDARD, IndexMode.LOGSDB, IndexMode.TIME_SERIES);
+            var indexMode = randomFrom(
+                IndexMode.STANDARD,
+                IndexMode.LOGSDB,
+                IndexMode.TIME_SERIES,
+                IndexMode.COLUMNAR,
+                IndexMode.COLUMNAR_LOGSDB
+            );
             String mapping = randomFrom(MAPPING_1, MAPPING_2, MAPPING_3);
             final boolean randomSyntheticId = syntheticId(indexMode.equals(IndexMode.TIME_SERIES));
             PerFieldFormatSupplier perFieldMapperCodec = createFormatSupplier(
@@ -275,6 +297,20 @@ public class PerFieldMapperCodecTests extends ESTestCase {
 
     public void testLogsIndexMode() throws IOException {
         PerFieldFormatSupplier perFieldMapperCodec = createFormatSupplier(IndexMode.LOGSDB, MAPPING_3);
+        assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("@timestamp")), is(true));
+        assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("hostname")), is(true));
+        assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("response_size")), is(true));
+    }
+
+    public void testColumnarIndexMode() throws IOException {
+        PerFieldFormatSupplier perFieldMapperCodec = createFormatSupplier(IndexMode.COLUMNAR, MAPPING_3);
+        assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("@timestamp")), is(true));
+        assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("hostname")), is(true));
+        assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("response_size")), is(true));
+    }
+
+    public void testColumnarLogsdbIndexMode() throws IOException {
+        PerFieldFormatSupplier perFieldMapperCodec = createFormatSupplier(IndexMode.COLUMNAR_LOGSDB, MAPPING_3);
         assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("@timestamp")), is(true));
         assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("hostname")), is(true));
         assertThat((perFieldMapperCodec.useTSDBDocValuesFormat("response_size")), is(true));
