@@ -345,7 +345,9 @@ public class IndexCommitTimestampFieldRangeTests extends MapperServiceTestCase {
 
     private void deleteDoc(String docIdToDelete, IndexWriter indexWriter, IndexMode indexMode) throws IOException {
         var deletedDoc = ParsedDocument.deleteTombstone(
-            indexMode == IndexMode.TIME_SERIES || indexMode == IndexMode.LOGSDB || indexMode == IndexMode.COLUMNAR
+            indexMode == IndexMode.TIME_SERIES
+                || indexMode == IndexMode.LOGSDB
+                || indexMode == IndexMode.COLUMNAR
                 || indexMode == IndexMode.COLUMNAR_LOGSDB
                     ? SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY
                     : SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES,
