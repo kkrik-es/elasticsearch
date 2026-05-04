@@ -1247,6 +1247,38 @@ public class IndexSettingsTests extends ESTestCase {
         );
     }
 
+    public void testDisableSequenceNumbersDefaultForColumnarModes() {
+        IndexVersion indexVersion = IndexVersionUtils.randomVersionBetween(IndexVersions.DISABLE_SEQUENCE_NUMBERS, IndexVersion.current());
+
+        // Test COLUMNAR mode
+        Settings columnarSettings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR.getName()).build();
+        IndexMetadata columnarMetadata = newIndexMeta("columnar-index", columnarSettings, indexVersion);
+        IndexSettings columnarIndexSettings = new IndexSettings(columnarMetadata, Settings.EMPTY);
+        assertThat("DISABLE_SEQUENCE_NUMBERS should be true for COLUMNAR mode", columnarIndexSettings.sequenceNumbersDisabled(), is(true));
+
+        // Test COLUMNAR_LOGSDB mode
+        Settings columnarLogsdbSettings = Settings.builder()
+            .put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR_LOGSDB.getName())
+            .build();
+        IndexMetadata columnarLogsdbMetadata = newIndexMeta("columnar-logsdb-index", columnarLogsdbSettings, indexVersion);
+        IndexSettings columnarLogsdbIndexSettings = new IndexSettings(columnarLogsdbMetadata, Settings.EMPTY);
+        assertThat(
+            "DISABLE_SEQUENCE_NUMBERS should be true for COLUMNAR_LOGSDB mode",
+            columnarLogsdbIndexSettings.sequenceNumbersDisabled(),
+            is(true)
+        );
+
+        // Test that STANDARD mode does not have sequence numbers disabled by default
+        Settings standardSettings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.STANDARD.getName()).build();
+        IndexMetadata standardMetadata = newIndexMeta("standard-index", standardSettings, indexVersion);
+        IndexSettings standardIndexSettings = new IndexSettings(standardMetadata, Settings.EMPTY);
+        assertThat(
+            "DISABLE_SEQUENCE_NUMBERS should be false for STANDARD mode",
+            standardIndexSettings.sequenceNumbersDisabled(),
+            is(false)
+        );
+    }
+
     public void testBloomFilterSettingsFromScopedSettings() {
         int numHashFunctions = randomIntBetween(1, ES94BloomFilterDocValuesFormat.MAX_NUM_HASH_FUNCTIONS);
         int smallMaxDocs = randomIntBetween(1, 999);

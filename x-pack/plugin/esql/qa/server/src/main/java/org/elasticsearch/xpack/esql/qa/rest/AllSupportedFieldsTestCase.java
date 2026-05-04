@@ -609,12 +609,12 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
         return ("FROM " + indexPattern + " METADATA _index").replace("%mode%", indexMode.toString()) + restOfQuery;
     }
 
-    protected String fromAllQuery(String restOfQuery) {
+    protected String fromAllQuery(String restOfQuery) throws IOException {
         return fromAllQuery(allIndexPattern(), restOfQuery);
     }
 
-    protected String allIndexPattern() {
-        return "%mode%--*";
+    protected String allIndexPattern() throws IOException {
+        return supportsNodeAssignment() ? "%mode%--*" : "%mode%";
     }
 
     public void testRow() throws IOException {

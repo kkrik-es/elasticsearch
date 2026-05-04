@@ -18,6 +18,7 @@ import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.util.FeatureFlag;
 import org.elasticsearch.core.Nullable;
 import org.elasticsearch.index.codec.CodecService;
 import org.elasticsearch.index.mapper.DataStreamTimestampFieldMapper;
@@ -668,6 +669,8 @@ public enum IndexMode {
         ).collect(toSet())
     );
 
+    public static final FeatureFlag COLUMNAR_FEATURE_FLAG = new FeatureFlag("columnar_index_mode");
+
     private final String name;
 
     IndexMode(String name) {
@@ -769,7 +772,7 @@ public enum IndexMode {
      * Parse a string into an {@link IndexMode}.
      */
     public static IndexMode fromString(String value) {
-        return switch (value.toLowerCase(Locale.ROOT)) {
+        IndexMode mode = switch (value.toLowerCase(Locale.ROOT)) {
             case "standard" -> IndexMode.STANDARD;
             case "time_series" -> IndexMode.TIME_SERIES;
             case "logsdb" -> IndexMode.LOGSDB;
@@ -784,6 +787,11 @@ public enum IndexMode {
                     + "]"
             );
         };
+
+        if ((mode == IndexMode.COLUMNAR || mode == IndexMode.COLUMNAR_LOGSDB) && COLUMNAR_FEATURE_FLAG.isEnabled() == false) {
+            throw new IllegalArgumentException("[" + value + "] index mode is only available in snapshot builds.");
+        }
+        return mode;
     }
 
     /**
