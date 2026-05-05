@@ -1092,7 +1092,11 @@ public final class IndexSettings {
         }
         IndexMode indexMode = IndexSettings.MODE.get(settings);
         if (indexMode == IndexMode.COLUMNAR || indexMode == IndexMode.COLUMNAR_LOGSDB) {
-            return Boolean.TRUE.toString();
+            var indexVersion = SETTING_INDEX_VERSION_CREATED.get(settings);
+            // Only enable by default if the index version supports it
+            if (indexVersion.onOrAfter(IndexVersions.DISABLE_SEQUENCE_NUMBERS)) {
+                return Boolean.TRUE.toString();
+            }
         }
         return Boolean.FALSE.toString();
     }, new Setting.Validator<>() {
