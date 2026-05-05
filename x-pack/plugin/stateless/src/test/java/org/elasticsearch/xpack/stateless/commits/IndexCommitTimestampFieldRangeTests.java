@@ -345,12 +345,9 @@ public class IndexCommitTimestampFieldRangeTests extends MapperServiceTestCase {
 
     private void deleteDoc(String docIdToDelete, IndexWriter indexWriter, IndexMode indexMode) throws IOException {
         var deletedDoc = ParsedDocument.deleteTombstone(
-            indexMode == IndexMode.TIME_SERIES
-                || indexMode == IndexMode.LOGSDB
-                || indexMode == IndexMode.COLUMNAR
-                || indexMode == IndexMode.COLUMNAR_LOGSDB
-                    ? SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY
-                    : SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES,
+            indexMode.isColumnar()
+                ? SeqNoFieldMapper.SeqNoIndexOptions.DOC_VALUES_ONLY
+                : SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES,
             docIdToDelete
         ).docs().get(0);
         var softDeletesField = Lucene.newSoftDeletesField();
