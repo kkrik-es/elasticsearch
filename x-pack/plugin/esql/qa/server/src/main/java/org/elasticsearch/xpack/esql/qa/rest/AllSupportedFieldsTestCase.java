@@ -615,12 +615,12 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
         return ("FROM " + indexPattern + " METADATA _index").replace("%mode%", indexMode.toString()) + restOfQuery;
     }
 
-    protected String fromAllQuery(String restOfQuery) throws IOException {
+    protected String fromAllQuery(String restOfQuery) {
         return fromAllQuery(allIndexPattern(), restOfQuery);
     }
 
-    protected String allIndexPattern() throws IOException {
-        return supportsNodeAssignment() ? "%mode%--*" : "%mode%";
+    protected String allIndexPattern() {
+        return "%mode%*";
     }
 
     public void testRow() throws IOException {
@@ -804,7 +804,7 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
     protected static String indexName(IndexMode mode, String nodeName) {
         String indexName = mode.toString();
         if (nodeName != null) {
-            indexName += "--" + nodeName.toLowerCase(Locale.ROOT);
+            indexName += "_" + nodeName.toLowerCase(Locale.ROOT);
         }
         return indexName;
     }
@@ -1265,7 +1265,7 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
 
     private boolean syntheticSourceByDefault() {
         return switch (indexMode) {
-            case TIME_SERIES, LOGSDB, COLUMNAR, COLUMNAR_LOGSDB -> true;
+            case TIME_SERIES, LOGSDB -> true;
             case STANDARD, LOOKUP -> false;
         };
     }
