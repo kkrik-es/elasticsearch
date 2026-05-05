@@ -63,4 +63,154 @@ public class ColumnarLogsdbIndexModeTests extends ESTestCase {
         );
         assertThat(IndexMode.COLUMNAR_LOGSDB.getTimestampBound(metadata), equalTo(null));
     }
+
+    public void testDefaultHostNameSortField() {
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", buildSettings());
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        boolean sortOnHostName = randomBoolean();
+        final IndexSettings settings = new IndexSettings(
+            metadata,
+            Settings.builder().put(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.getKey(), sortOnHostName).build()
+        );
+        assertThat(settings.getIndexSortConfig().hasPrimarySortOnField("host.name"), equalTo(sortOnHostName));
+    }
+
+    public void testDefaultHostNameSortFieldAndMapping() {
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", buildSettings());
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        final IndexSettings settings = new IndexSettings(
+            metadata,
+            Settings.builder()
+                .put(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.getKey(), true)
+                .put(IndexSettings.LOGSDB_ADD_HOST_NAME_FIELD.getKey(), true)
+                .build()
+        );
+        assertThat(settings.getIndexSortConfig().hasPrimarySortOnField("host.name"), equalTo(true));
+        assertThat(IndexMode.COLUMNAR_LOGSDB.getDefaultMapping(settings).string(), containsString("host.name"));
+    }
+
+    public void testDefaultHostNameSortFieldBwc() {
+        final IndexMetadata metadata = IndexMetadata.builder("test")
+            .settings(
+                indexSettings(IndexVersionUtils.getPreviousVersion(IndexVersions.LOGSB_OPTIONAL_SORTING_ON_HOST_NAME), 1, 1).put(
+                    buildSettings()
+                )
+            )
+            .build();
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        final IndexSettings settings = new IndexSettings(metadata, Settings.EMPTY);
+        assertThat(settings.getIndexSortConfig().hasPrimarySortOnField("host.name"), equalTo(true));
+    }
+
+    public void testDefaultHostNameSortWithOrder() {
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", buildSettings());
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        var exception = expectThrows(
+            IllegalArgumentException.class,
+            () -> new IndexSettings(
+                metadata,
+                Settings.builder()
+                    .put(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.getKey(), randomBoolean())
+                    .put(IndexSortConfig.INDEX_SORT_ORDER_SETTING.getKey(), "desc")
+                    .build()
+            )
+        );
+        assertEquals("setting [index.sort.order] requires [index.sort.field] to be configured", exception.getMessage());
+    }
+
+    public void testDefaultHostNameSortWithMode() {
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", buildSettings());
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        var exception = expectThrows(
+            IllegalArgumentException.class,
+            () -> new IndexSettings(
+                metadata,
+                Settings.builder()
+                    .put(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.getKey(), randomBoolean())
+                    .put(IndexSortConfig.INDEX_SORT_MODE_SETTING.getKey(), "MAX")
+                    .build()
+            )
+        );
+        assertEquals("setting [index.sort.mode] requires [index.sort.field] to be configured", exception.getMessage());
+    }
+
+    public void testDefaultHostNameSortWithMissing() {
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", buildSettings());
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        var exception = expectThrows(
+            IllegalArgumentException.class,
+            () -> new IndexSettings(
+                metadata,
+                Settings.builder()
+                    .put(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.getKey(), randomBoolean())
+                    .put(IndexSortConfig.INDEX_SORT_MISSING_SETTING.getKey(), "_first")
+                    .build()
+            )
+        );
+        assertEquals("setting [index.sort.missing] requires [index.sort.field] to be configured", exception.getMessage());
+    }
+
+    public void testCustomSortField() {
+        final Settings sortSettings = Settings.builder()
+            .put(buildSettings())
+            .put(IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey(), "agent_id")
+            .build();
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", sortSettings);
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        final IndexSettings settings = new IndexSettings(metadata, Settings.EMPTY);
+        assertThat(settings.getMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        assertThat(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey()), equalTo("agent_id"));
+        assertThat(settings.getIndexSortConfig().hasPrimarySortOnField("host.name"), equalTo(false));
+        assertThat(IndexMode.COLUMNAR_LOGSDB.getDefaultMapping(settings).string(), not(containsString("host")));
+    }
+
+    public void testSortMode() {
+        final Settings sortSettings = Settings.builder()
+            .put(buildSettings())
+            .put(IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey(), "agent_id")
+            .put(IndexSortConfig.INDEX_SORT_MODE_SETTING.getKey(), "max")
+            .build();
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", sortSettings);
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        final IndexSettings settings = new IndexSettings(metadata, Settings.EMPTY);
+        assertThat(settings.getMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        assertThat("agent_id", equalTo(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey())));
+        assertThat("max", equalTo(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_MODE_SETTING.getKey())));
+    }
+
+    public void testSortOrder() {
+        final Settings sortSettings = Settings.builder()
+            .put(buildSettings())
+            .put(IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey(), "agent_id")
+            .put(IndexSortConfig.INDEX_SORT_ORDER_SETTING.getKey(), "desc")
+            .build();
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", sortSettings);
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        final IndexSettings settings = new IndexSettings(metadata, Settings.EMPTY);
+        assertThat(settings.getMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        assertThat("agent_id", equalTo(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey())));
+        assertThat("desc", equalTo(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_ORDER_SETTING.getKey())));
+    }
+
+    public void testSortMissing() {
+        final Settings sortSettings = Settings.builder()
+            .put(buildSettings())
+            .put(IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey(), "agent_id")
+            .put(IndexSortConfig.INDEX_SORT_MISSING_SETTING.getKey(), "_last")
+            .build();
+        final IndexMetadata metadata = IndexSettingsTests.newIndexMeta("test", sortSettings);
+        assertThat(metadata.getIndexMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        final IndexSettings settings = new IndexSettings(metadata, Settings.EMPTY);
+        assertThat(settings.getMode(), equalTo(IndexMode.COLUMNAR_LOGSDB));
+        assertThat("agent_id", equalTo(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_FIELD_SETTING.getKey())));
+        assertThat("_last", equalTo(getIndexSetting(settings, IndexSortConfig.INDEX_SORT_MISSING_SETTING.getKey())));
+    }
+
+    private Settings buildSettings() {
+        return Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR_LOGSDB.getName()).build();
+    }
+
+    private String getIndexSetting(final IndexSettings settings, final String name) {
+        return settings.getIndexMetadata().getSettings().get(name);
+    }
 }
