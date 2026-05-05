@@ -791,7 +791,10 @@ public class FollowingEngineTests extends ESTestCase {
                 settingsBuilder.put(IndexSettings.SYNTHETIC_ID.getKey(), useSyntheticId);
                 break;
             case LOGSDB:
-                settingsBuilder.put("index.mode", IndexMode.LOGSDB.getName());
+            case COLUMNAR:
+            case COLUMNAR_LOGSDB:
+                settingsBuilder.put("index.mode", indexMode.getName());
+                settingsBuilder.put("index.disable_sequence_numbers", "false");
                 settingsBuilder.put("index.seq_no.index_options", "points_and_doc_values");
                 break;
             case LOOKUP:
