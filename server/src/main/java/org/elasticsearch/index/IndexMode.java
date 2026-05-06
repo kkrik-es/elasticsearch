@@ -679,9 +679,7 @@ public enum IndexMode {
         if (COLUMNAR_FEATURE_FLAG.isEnabled()) {
             return values();
         }
-        return Arrays.stream(values())
-            .filter(m -> m != COLUMNAR && m != COLUMNAR_LOGSDB)
-            .toArray(IndexMode[]::new);
+        return Arrays.stream(values()).filter(m -> m != COLUMNAR && m != COLUMNAR_LOGSDB).toArray(IndexMode[]::new);
     }
 
     private final String name;

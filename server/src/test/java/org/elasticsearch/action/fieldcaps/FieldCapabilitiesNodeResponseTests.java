@@ -44,7 +44,13 @@ public class FieldCapabilitiesNodeResponseTests extends AbstractWireSerializingT
         int numResponse = randomIntBetween(0, 10);
         for (int i = 0; i < numResponse; i++) {
             responses.add(
-                new FieldCapabilitiesIndexResponse("index_" + i, null, randomFieldCaps(), randomBoolean(), randomFrom(IndexMode.availableModes()))
+                new FieldCapabilitiesIndexResponse(
+                    "index_" + i,
+                    null,
+                    randomFieldCaps(),
+                    randomBoolean(),
+                    randomFrom(IndexMode.availableModes())
+                )
             );
         }
         int numUnmatched = randomIntBetween(0, 3);
@@ -66,7 +72,13 @@ public class FieldCapabilitiesNodeResponseTests extends AbstractWireSerializingT
         int mutation = response.getIndexResponses().isEmpty() ? 0 : randomIntBetween(0, 3);
         switch (mutation) {
             case 0 -> newResponses.add(
-                new FieldCapabilitiesIndexResponse("extra_index", null, randomFieldCaps(), randomBoolean(), randomFrom(IndexMode.availableModes()))
+                new FieldCapabilitiesIndexResponse(
+                    "extra_index",
+                    null,
+                    randomFieldCaps(),
+                    randomBoolean(),
+                    randomFrom(IndexMode.availableModes())
+                )
             );
             case 1 -> {
                 int toRemove = randomInt(newResponses.size() - 1);
