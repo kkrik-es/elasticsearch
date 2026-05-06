@@ -1,0 +1,5 @@
+area: Logs
+issues: []
+pr: 148222
+summary: Introduce columnar index modes
+type: enhancement
