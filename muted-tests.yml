@@ -404,9 +404,6 @@ tests:
 - class: org.elasticsearch.backwards.RareTermsIT
   method: testSingleValuedString
   issue: https://github.com/elastic/elasticsearch/issues/147853
-- class: org.elasticsearch.xpack.stateless.commits.StatelessBatchedBehavioursIT
-  method: testGenerationalFileBlobReferenceIsRetainedCorrectly
-  issue: https://github.com/elastic/elasticsearch/issues/147858
 - class: org.elasticsearch.search.internal.CancellableBulkScorerTests
   method: testIntervalGrowsGeometrically
   issue: https://github.com/elastic/elasticsearch/issues/147872
@@ -434,9 +431,6 @@ tests:
 - class: org.elasticsearch.xpack.sql.qa.single_node.RestSqlIT
   method: testNextPageText
   issue: https://github.com/elastic/elasticsearch/issues/147950
-- class: org.elasticsearch.xpack.security.QueryableReservedRolesIT
-  method: testConfiguredReservedRolesAfterClosingAndOpeningIndex
-  issue: https://github.com/elastic/elasticsearch/issues/147972
 - class: org.elasticsearch.xpack.stateless.StatelessHollowIndexShardsIT
   method: testDataStreamStatsActionBroadcastedToSearchNodesOnly
   issue: https://github.com/elastic/elasticsearch/issues/147973
@@ -542,3 +536,6 @@ tests:
 - class: org.elasticsearch.index.mapper.DateRangeDocValuesLoaderTests
   method: testEmptyRangesAppendsNull
   issue: https://github.com/elastic/elasticsearch/issues/148378
+- class: org.elasticsearch.xpack.inference.rest.BaseInferenceActionTests
+  method: testResolveTimeoutForTaskType_NonNullTimeout_ReturnsTimeout
+  issue: https://github.com/elastic/elasticsearch/issues/148396
