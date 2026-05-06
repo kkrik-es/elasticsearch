@@ -37,6 +37,7 @@ import org.hamcrest.Matchers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -1126,7 +1127,7 @@ public class IndexSettingsTests extends ESTestCase {
             IndexVersions.TIME_SERIES_USE_SYNTHETIC_ID_94,
             IndexVersion.current()
         );
-        IndexMode badMode = randomValueOtherThan(IndexMode.TIME_SERIES, () -> randomFrom(IndexMode.values()));
+        IndexMode badMode = randomValueOtherThan(IndexMode.TIME_SERIES, () -> randomFrom(IndexMode.availableModes()));
         String codec = CodecService.DEFAULT_CODEC;
 
         Settings settings = Settings.builder()
@@ -1202,7 +1203,11 @@ public class IndexSettingsTests extends ESTestCase {
     public void testDisableSequenceNumbersRequiresDocValuesOnlyForNonStandardModes() {
         IndexVersion indexVersion = IndexVersionUtils.randomVersionBetween(IndexVersions.DISABLE_SEQUENCE_NUMBERS, IndexVersion.current());
 
-        IndexMode mode = randomFrom(IndexMode.TIME_SERIES, IndexMode.LOGSDB, IndexMode.COLUMNAR_LOGSDB, IndexMode.COLUMNAR);
+        List<IndexMode> modes = new ArrayList<>(List.of(IndexMode.TIME_SERIES, IndexMode.LOGSDB));
+        if (IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled()) {
+            modes.addAll(List.of(IndexMode.COLUMNAR_LOGSDB, IndexMode.COLUMNAR));
+        }
+        IndexMode mode = randomFrom(modes);
         Settings.Builder builder = Settings.builder()
             .put(IndexSettings.MODE.getKey(), mode.getName())
             .put(IndexSettings.SEQ_NO_INDEX_OPTIONS_SETTING.getKey(), SeqNoFieldMapper.SeqNoIndexOptions.POINTS_AND_DOC_VALUES)
@@ -1248,6 +1253,7 @@ public class IndexSettingsTests extends ESTestCase {
     }
 
     public void testDisableSequenceNumbersDefaultForColumnarModes() {
+        assumeTrue("columnar index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
         IndexVersion indexVersion = IndexVersionUtils.randomVersionBetween(IndexVersions.DISABLE_SEQUENCE_NUMBERS, IndexVersion.current());
 
         // Test COLUMNAR mode

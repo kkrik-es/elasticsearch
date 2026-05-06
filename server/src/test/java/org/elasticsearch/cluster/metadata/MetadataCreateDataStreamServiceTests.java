@@ -127,6 +127,7 @@ public class MetadataCreateDataStreamServiceTests extends ESTestCase {
     }
 
     public void testCreateDataStreamLogsdbColumnar() throws Exception {
+        assumeTrue("columnar index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
         final MetadataCreateIndexService metadataCreateIndexService = getMetadataCreateIndexService();
         final String dataStreamName = "my-data-stream";
         ComposableIndexTemplate template = ComposableIndexTemplate.builder()

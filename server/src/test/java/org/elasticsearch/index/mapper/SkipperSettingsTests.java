@@ -78,6 +78,7 @@ public class SkipperSettingsTests extends ESTestCase {
     }
 
     public void testColumnarSkipperSettingDefaults() {
+        assumeTrue("columnar index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
         {
             IndexSettings indexSettings = settings(
                 IndexVersionUtils.randomVersionBetween(IndexVersions.SKIPPERS_ENABLED_BY_DEFAULT_IN_LOGSDB, IndexVersion.current()),
@@ -95,6 +96,7 @@ public class SkipperSettingsTests extends ESTestCase {
     }
 
     public void testColumnarLogsdbSkipperSettingDefaults() {
+        assumeTrue("columnar index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
         {
             IndexSettings indexSettings = settings(
                 IndexVersionUtils.randomVersionBetween(IndexVersions.SKIPPERS_ENABLED_BY_DEFAULT_IN_LOGSDB, IndexVersion.current()),

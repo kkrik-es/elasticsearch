@@ -731,7 +731,7 @@ public final class DataStreamTestHelper {
                 new MetadataFieldMapper[] { dtfm },
                 Collections.emptyMap()
             );
-            mappingLookup = MappingLookup.fromMappers(mapping, List.of(dtfm, dateFieldMapper), List.of(), randomFrom(IndexMode.values()));
+            mappingLookup = MappingLookup.fromMappers(mapping, List.of(dtfm, dateFieldMapper), List.of(), randomFrom(IndexMode.availableModes()));
         }
         IndicesService indicesService = mockIndicesServices(mappingLookup);
 

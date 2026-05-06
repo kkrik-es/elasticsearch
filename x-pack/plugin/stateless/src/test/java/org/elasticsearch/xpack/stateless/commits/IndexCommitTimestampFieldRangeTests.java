@@ -108,7 +108,7 @@ public class IndexCommitTimestampFieldRangeTests extends MapperServiceTestCase {
     }
 
     public void testSoftDeletesAreAlmostAlwaysDisregardedForTimestampRange() throws Exception {
-        IndexMode indexMode = randomFrom(IndexMode.values());
+        IndexMode indexMode = randomFrom(IndexMode.availableModes());
         DocumentMapper mapper = getDocumentMapper(indexMode);
         boolean useCFS = randomBoolean();
         IndexWriterConfig indexWriterConfig = getIndexWriterConfig(useCFS, randomBoolean());
@@ -170,7 +170,7 @@ public class IndexCommitTimestampFieldRangeTests extends MapperServiceTestCase {
     }
 
     public void testFieldValueRangeForBatchedCompoundCommit() throws Exception {
-        IndexMode indexMode = randomFrom(IndexMode.values());
+        IndexMode indexMode = randomFrom(IndexMode.availableModes());
         DocumentMapper mapper = getDocumentMapper(indexMode);
         boolean useCFS = randomBoolean();
         Map<String, BlobLocation> uploadedBlobLocations = new HashMap<>();

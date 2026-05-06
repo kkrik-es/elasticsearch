@@ -2491,6 +2491,7 @@ public class TextFieldMapperTests extends MapperTestCase {
     }
 
     public void testNormsDisabledWhenIndexModeIsColumnar() throws IOException {
+        assumeTrue("columnar index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
         // given
         Settings.Builder indexSettingsBuilder = getIndexSettingsBuilder();
         indexSettingsBuilder.put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR.getName());

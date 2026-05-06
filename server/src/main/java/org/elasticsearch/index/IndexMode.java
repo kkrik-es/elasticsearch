@@ -671,6 +671,19 @@ public enum IndexMode {
 
     public static final FeatureFlag COLUMNAR_FEATURE_FLAG = new FeatureFlag("columnar_index_mode");
 
+    /**
+     * Returns only the index modes that are available in the current build.
+     * Columnar modes are excluded in non-snapshot builds where the feature flag is disabled.
+     */
+    public static IndexMode[] availableModes() {
+        if (COLUMNAR_FEATURE_FLAG.isEnabled()) {
+            return values();
+        }
+        return Arrays.stream(values())
+            .filter(m -> m != COLUMNAR && m != COLUMNAR_LOGSDB)
+            .toArray(IndexMode[]::new);
+    }
+
     private final String name;
 
     IndexMode(String name) {

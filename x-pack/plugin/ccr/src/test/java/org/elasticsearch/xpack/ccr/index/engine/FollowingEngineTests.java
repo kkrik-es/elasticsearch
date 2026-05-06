@@ -116,7 +116,7 @@ public class FollowingEngineTests extends ESTestCase {
         index = new Index("index", "uuid");
         shardId = new ShardId(index, 0);
         primaryTerm.set(randomLongBetween(1, Long.MAX_VALUE));
-        indexMode = randomFrom(IndexMode.values());
+        indexMode = randomFrom(IndexMode.availableModes());
     }
 
     @Override

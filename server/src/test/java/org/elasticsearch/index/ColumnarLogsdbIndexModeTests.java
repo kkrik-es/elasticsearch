@@ -24,6 +24,12 @@ import static org.hamcrest.Matchers.not;
 
 public class ColumnarLogsdbIndexModeTests extends ESTestCase {
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        assumeTrue("columnar_logsdb index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
+    }
+
     public void testColumnarLogsdbFromString() {
         assertThat(IndexMode.fromString("columnar_logsdb"), equalTo(IndexMode.COLUMNAR_LOGSDB));
         assertThat(IndexMode.fromString("COLUMNAR_LOGSDB"), equalTo(IndexMode.COLUMNAR_LOGSDB));

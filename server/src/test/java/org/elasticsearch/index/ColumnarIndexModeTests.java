@@ -21,6 +21,12 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class ColumnarIndexModeTests extends ESTestCase {
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        assumeTrue("columnar index mode requires snapshot build", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
+    }
+
     public void testColumnarFromString() {
         assertThat(IndexMode.fromString("columnar"), equalTo(IndexMode.COLUMNAR));
         assertThat(IndexMode.fromString("COLUMNAR"), equalTo(IndexMode.COLUMNAR));
