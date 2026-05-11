@@ -1328,6 +1328,109 @@ public class LogsdbIndexModeSettingsProviderTests extends ESTestCase {
         assertEquals(1, newMapperServiceCounter.get());
     }
 
+    private Settings generateColumnarLogsdbSettings(Settings settings, String mapping) throws IOException {
+        return generateColumnarLogsdbSettings(settings, mapping, Version.CURRENT);
+    }
+
+    private Settings generateColumnarLogsdbSettings(Settings settings, String mapping, Version version) throws IOException {
+        var clusterSettings = Settings.builder().put("cluster.logsdb.enabled", true).build();
+        var provider = new LogsdbIndexModeSettingsProvider(logsdbLicenseService, clusterSettings);
+        var logsdbPlugin = new LogsDBPlugin(settings);
+        provider.init(im -> {
+            newMapperServiceCounter.incrementAndGet();
+            return MapperTestUtils.newMapperService(
+                xContentRegistry(),
+                createTempDir(),
+                im.getSettings(),
+                new IndicesModule(List.of(logsdbPlugin)),
+                im.getIndex().getName(),
+                logsdbPlugin.getSettings().stream().filter(Setting::hasIndexScope).toArray(Setting<?>[]::new)
+            );
+        }, IndexVersion::current, () -> version, true, true);
+        Settings.Builder settingsBuilder = builder();
+        provider.provideAdditionalSettings(
+            DataStream.getDefaultBackingIndexName(DATA_STREAM_NAME, 0),
+            DATA_STREAM_NAME,
+            IndexMode.COLUMNAR_LOGSDB,
+            emptyProject(),
+            Instant.now(),
+            settings,
+            mapping == null ? List.of() : List.of(new CompressedXContent(mapping)),
+            IndexVersion.current(),
+            settingsBuilder
+        );
+        return builder().put(settingsBuilder.build()).build();
+    }
+
+    public void testNewIndexHasSyntheticSourceUsageColumnarLogsdbIndex() throws IOException {
+        String indexName = DataStream.getDefaultBackingIndexName(DATA_STREAM_NAME, 0);
+        String mapping = """
+            {
+                "properties": {
+                    "my_field": {
+                        "type": "keyword"
+                    }
+                }
+            }
+            """;
+        LogsdbIndexModeSettingsProvider provider = withSyntheticSourceDemotionSupport(false);
+        {
+            Settings settings = Settings.builder().put("index.mode", "columnar_logsdb").build();
+            boolean result = provider.getMappingHints(indexName, null, settings, List.of(new CompressedXContent(getMapping(mapping))))
+                .hasSyntheticSourceUsage();
+            assertTrue(result);
+            assertThat(newMapperServiceCounter.get(), equalTo(1));
+        }
+        {
+            Settings settings = Settings.builder().put("index.mode", "columnar_logsdb").build();
+            boolean result = provider.getMappingHints(indexName, null, settings, List.of()).hasSyntheticSourceUsage();
+            assertTrue(result);
+            assertThat(newMapperServiceCounter.get(), equalTo(2));
+        }
+        {
+            boolean result = provider.getMappingHints(indexName, null, Settings.EMPTY, List.of()).hasSyntheticSourceUsage();
+            assertFalse(result);
+            assertThat(newMapperServiceCounter.get(), equalTo(3));
+        }
+    }
+
+    public void testColumnarLogsdbInjectsSortAndHostName() throws Exception {
+        var settings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR_LOGSDB).build();
+        var mappings = """
+            {
+                "properties": {
+                    "@timestamp": {
+                        "type": "date"
+                    }
+                }
+            }
+            """;
+        Settings result = generateColumnarLogsdbSettings(settings, getMapping(mappings));
+        assertTrue(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.get(result));
+        assertTrue(IndexSettings.LOGSDB_ADD_HOST_NAME_FIELD.get(result));
+        assertEquals(1, newMapperServiceCounter.get());
+    }
+
+    public void testColumnarLogsdbSortOnExistingHostNameKeyword() throws Exception {
+        var settings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR_LOGSDB).build();
+        var mappings = """
+            {
+                "properties": {
+                    "@timestamp": {
+                        "type": "date"
+                    },
+                    "host.name": {
+                        "type": "keyword"
+                    }
+                }
+            }
+            """;
+        Settings result = generateColumnarLogsdbSettings(settings, getMapping(mappings));
+        assertTrue(IndexSettings.LOGSDB_SORT_ON_HOST_NAME.get(result));
+        assertFalse(IndexSettings.LOGSDB_ADD_HOST_NAME_FIELD.get(result));
+        assertEquals(1, newMapperServiceCounter.get());
+    }
+
     public void testSortFastRefresh() throws Exception {
         var settings = Settings.builder()
             .put(IndexSettings.MODE.getKey(), IndexMode.LOGSDB)

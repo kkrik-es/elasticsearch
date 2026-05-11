@@ -108,12 +108,13 @@ public class LogsIndexingIT extends ESSingleNodeTestCase {
     public void testStandard() throws Exception {
         String dataStreamName = "k8s";
         var putTemplateRequest = new TransportPutComposableIndexTemplateAction.Request("id");
+        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
         putTemplateRequest.indexTemplate(
             ComposableIndexTemplate.builder()
                 .indexPatterns(List.of(dataStreamName + "*"))
                 .template(
                     new Template(
-                        indexSettings(4, 0).put("index.mode", "logsdb").put("index.sort.field", "message,k8s.pod.uid,@timestamp").build(),
+                        indexSettings(4, 0).put("index.mode", indexMode).put("index.sort.field", "message,k8s.pod.uid,@timestamp").build(),
                         new CompressedXContent(MAPPING_TEMPLATE),
                         null
                     )
@@ -213,11 +214,12 @@ public class LogsIndexingIT extends ESSingleNodeTestCase {
     }
 
     public void testShrink() throws Exception {
+        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
         client().admin()
             .indices()
             .prepareCreate("my-logs")
             .setMapping("@timestamp", "type=date", "host.name", "type=keyword")
-            .setSettings(indexSettings(between(3, 5), 0).put("index.mode", "logsdb").put("index.sort.field", "host.name"))
+            .setSettings(indexSettings(between(3, 5), 0).put("index.mode", indexMode).put("index.sort.field", "host.name"))
             .get();
 
         long timestamp = DEFAULT_DATE_TIME_FORMATTER.parseMillis("2025-08-08T00:00:00Z");
