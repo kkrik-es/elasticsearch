@@ -563,3 +563,6 @@ tests:
 - class: org.elasticsearch.xpack.stateless.cache.SharedBlobCacheWarmingServiceTests
   method: testIdLookupPreWarming
   issue: https://github.com/elastic/elasticsearch/issues/148760
+- class: org.elasticsearch.xpack.stateless.recovery.IndexingShardRelocationIT
+  method: testRelocateIndexingShardWithActionFailures
+  issue: https://github.com/elastic/elasticsearch/issues/148782
