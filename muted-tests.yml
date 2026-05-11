@@ -635,3 +635,6 @@ tests:
 - class: org.elasticsearch.xpack.stateless.recovery.IndexingShardRecoveryIT
   method: testSnapshotRecovery
   issue: https://github.com/elastic/elasticsearch/issues/148750
+- class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
+  method: test {csv-spec:external-basic.selectSpecificColumns [LOCAL]}
+  issue: https://github.com/elastic/elasticsearch/issues/148751
