@@ -566,3 +566,6 @@ tests:
 - class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
   method: test {csv-spec:external-basic.selectHeightVariants [GCS]}
   issue: https://github.com/elastic/elasticsearch/issues/148720
+- class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
+  method: test {csv-spec:external-basic.filterByGender [LOCAL]}
+  issue: https://github.com/elastic/elasticsearch/issues/148721
