@@ -562,3 +562,6 @@ tests:
 - class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
   method: test {csv-spec:external-basic.operatorLikeCaseInsensitiveAfterToUpper [S3]}
   issue: https://github.com/elastic/elasticsearch/issues/148718
+- class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
+  method: test {csv-spec:external-basic.evalComputedColumn [LOCAL]}
+  issue: https://github.com/elastic/elasticsearch/issues/148719
