@@ -638,3 +638,6 @@ tests:
 - class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
   method: test {csv-spec:external-basic.selectSpecificColumns [LOCAL]}
   issue: https://github.com/elastic/elasticsearch/issues/148751
+- class: org.elasticsearch.xpack.esql.qa.parquet.ParquetRsFormatSpecIT
+  method: test {csv-spec:external-basic.categorizeByFullName [LOCAL]}
+  issue: https://github.com/elastic/elasticsearch/issues/148752
