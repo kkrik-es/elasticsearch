@@ -557,3 +557,6 @@ tests:
 - class: org.elasticsearch.xpack.esql.qa.mixed.MixedClusterEsqlSpecIT
   method: test {csv-spec:exponential_histogram.timseriesAllAggsGroupedFiltered}
   issue: https://github.com/elastic/elasticsearch/issues/148887
+- class: org.elasticsearch.xpack.esql.qa.mixed.MixedClusterEsqlSpecIT
+  method: test {csv-spec:exponential_histogram.median for exponential histogram docs}
+  issue: https://github.com/elastic/elasticsearch/issues/148888
