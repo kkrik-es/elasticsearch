@@ -36,6 +36,7 @@ import org.elasticsearch.license.internal.XPackLicenseStatus;
 import org.elasticsearch.test.ESTestCase;
 import org.elasticsearch.xpack.logsdb.patterntext.PatternTextFieldMapper;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -73,27 +74,38 @@ public class LogsdbIndexModeSettingsProviderTests extends ESTestCase {
         }
         """;
 
+    // Shared across all tests — expensive to create (signed license, Mockito mocks).
+    private static MockLicenseState sharedLicenseState;
+    private static LicenseService sharedLicenseService;
+    private static XPackLicenseState sharedBasicLicenseState;
+    private static LicenseService sharedBasicLicenseService;
+
+    // Fresh per test because some tests mutate them (e.g. setSyntheticSourceFallback).
     private LogsdbLicenseService logsdbLicenseService;
     private LogsdbLicenseService basicLogsdbLicenseService;
     private final AtomicInteger newMapperServiceCounter = new AtomicInteger();
 
-    @Before
-    public void setup() throws Exception {
-        MockLicenseState licenseState = MockLicenseState.createMock();
-        when(licenseState.isAllowed(any())).thenReturn(true);
-        var mockLicenseService = mock(LicenseService.class);
-        License license = createEnterpriseLicense();
-        when(mockLicenseService.getLicense()).thenReturn(license);
-        logsdbLicenseService = new LogsdbLicenseService(Settings.EMPTY);
-        logsdbLicenseService.setLicenseState(licenseState);
-        logsdbLicenseService.setLicenseService(mockLicenseService);
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        sharedLicenseState = MockLicenseState.createMock();
+        when(sharedLicenseState.isAllowed(any())).thenReturn(true);
+        sharedLicenseService = mock(LicenseService.class);
+        when(sharedLicenseService.getLicense()).thenReturn(createEnterpriseLicense());
 
-        var basicLicenseState = new XPackLicenseState(() -> 0L, new XPackLicenseStatus(License.OperationMode.BASIC, true, null));
-        var basicLicenseService = mock(LicenseService.class);
-        when(basicLicenseService.getLicense()).thenReturn(null);
+        sharedBasicLicenseState = new XPackLicenseState(() -> 0L, new XPackLicenseStatus(License.OperationMode.BASIC, true, null));
+        sharedBasicLicenseService = mock(LicenseService.class);
+        when(sharedBasicLicenseService.getLicense()).thenReturn(null);
+    }
+
+    @Before
+    public void setup() {
+        logsdbLicenseService = new LogsdbLicenseService(Settings.EMPTY);
+        logsdbLicenseService.setLicenseState(sharedLicenseState);
+        logsdbLicenseService.setLicenseService(sharedLicenseService);
+
         basicLogsdbLicenseService = new LogsdbLicenseService(Settings.EMPTY);
-        basicLogsdbLicenseService.setLicenseState(basicLicenseState);
-        basicLogsdbLicenseService.setLicenseService(basicLicenseService);
+        basicLogsdbLicenseService.setLicenseState(sharedBasicLicenseState);
+        basicLogsdbLicenseService.setLicenseService(sharedBasicLicenseService);
     }
 
     private static String getMapping(String contents) {
