@@ -557,3 +557,6 @@ tests:
 - class: org.elasticsearch.xpack.esql.qa.single_node.EsqlSpecForceStoredLoadingIT
   method: test {csv-spec:flattened.casePicksPerRow}
   issue: https://github.com/elastic/elasticsearch/issues/149027
+- class: org.elasticsearch.xpack.esql.qa.single_node.EsqlSpecForceStoredLoadingIT
+  method: test {csv-spec:field_extract.caseWithFieldExtractInCondition}
+  issue: https://github.com/elastic/elasticsearch/issues/149028
