@@ -23,6 +23,7 @@ import org.elasticsearch.cluster.metadata.ComposableIndexTemplate;
 import org.elasticsearch.cluster.metadata.Template;
 import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.IndexMode;
 import org.elasticsearch.common.time.DateFormatter;
 import org.elasticsearch.common.time.FormatNames;
 import org.elasticsearch.datastreams.DataStreamsPlugin;
@@ -108,7 +109,7 @@ public class LogsIndexingIT extends ESSingleNodeTestCase {
     public void testStandard() throws Exception {
         String dataStreamName = "k8s";
         var putTemplateRequest = new TransportPutComposableIndexTemplateAction.Request("id");
-        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
+        String indexMode = IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled() && randomBoolean() ? "logsdb_columnar" : "logsdb";
         putTemplateRequest.indexTemplate(
             ComposableIndexTemplate.builder()
                 .indexPatterns(List.of(dataStreamName + "*"))
@@ -214,7 +215,7 @@ public class LogsIndexingIT extends ESSingleNodeTestCase {
     }
 
     public void testShrink() throws Exception {
-        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
+        String indexMode = IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled() && randomBoolean() ? "logsdb_columnar" : "logsdb";
         client().admin()
             .indices()
             .prepareCreate("my-logs")
