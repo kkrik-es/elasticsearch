@@ -7,6 +7,7 @@
 
 package org.elasticsearch.xpack.logsdb;
 
+import org.elasticsearch.Build;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.cluster.metadata.IndexMetadata;
 import org.elasticsearch.common.settings.SecureString;
@@ -180,7 +181,7 @@ public class LogsdbRestIT extends ESRestTestCase {
             }
             """;
         String indexName = "test-foo";
-        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
+        String indexMode = Build.current().isSnapshot() && randomBoolean() ? "logsdb_columnar" : "logsdb";
         createIndex(indexName, Settings.builder().put("index.mode", indexMode).build(), mappings);
 
         int numDocs = 500;
@@ -282,7 +283,7 @@ public class LogsdbRestIT extends ESRestTestCase {
             }
             """;
         String indexName = "test-foo";
-        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
+        String indexMode = Build.current().isSnapshot() && randomBoolean() ? "logsdb_columnar" : "logsdb";
         createIndex(indexName, Settings.builder().put("index.mode", indexMode).build(), mappings);
 
         int messageSize = 256;
@@ -471,7 +472,7 @@ public class LogsdbRestIT extends ESRestTestCase {
             }
             """;
         String indexName = "test-foo";
-        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
+        String indexMode = Build.current().isSnapshot() && randomBoolean() ? "logsdb_columnar" : "logsdb";
         createIndex(indexName, Settings.builder().put("index.mode", indexMode).build(), mappings);
 
         int numDocs = 1000;
