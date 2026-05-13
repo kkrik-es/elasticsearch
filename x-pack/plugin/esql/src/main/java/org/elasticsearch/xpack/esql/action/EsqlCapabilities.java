@@ -832,6 +832,11 @@ public class EsqlCapabilities {
         BUCKET_WHOLE_NUMBER_AS_SPAN,
 
         /**
+         * Expose resolved bucket interval in {@code _meta} on {@code BUCKET} grouping columns.
+         */
+        COLUMN_METADATA_BUCKET(Build.current().isSnapshot()),
+
+        /**
          * Allow mixed numeric types in coalesce
          */
         MIXED_NUMERIC_TYPES_IN_COALESCE,
