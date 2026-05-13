@@ -467,9 +467,6 @@ tests:
 - class: org.elasticsearch.index.mapper.DateRangeDocValuesLoaderTests
   method: testEmptyRangesAppendsNull
   issue: https://github.com/elastic/elasticsearch/issues/148378
-- class: org.elasticsearch.xpack.stateless.reshard.StatelessReshardIT
-  method: testReshardMetrics
-  issue: https://github.com/elastic/elasticsearch/issues/148463
 - class: org.elasticsearch.xpack.dlm.frozen.DLMFrozenTransitionIT
   method: testEndToEndFrozenTransition
   issue: https://github.com/elastic/elasticsearch/issues/148467
