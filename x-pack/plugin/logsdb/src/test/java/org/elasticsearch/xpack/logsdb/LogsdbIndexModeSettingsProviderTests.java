@@ -1363,7 +1363,7 @@ public class LogsdbIndexModeSettingsProviderTests extends ESTestCase {
         provider.provideAdditionalSettings(
             DataStream.getDefaultBackingIndexName(DATA_STREAM_NAME, 0),
             DATA_STREAM_NAME,
-            IndexMode.COLUMNAR_LOGSDB,
+            IndexMode.LOGSDB_COLUMNAR,
             emptyProject(),
             Instant.now(),
             settings,
@@ -1388,14 +1388,14 @@ public class LogsdbIndexModeSettingsProviderTests extends ESTestCase {
             """;
         LogsdbIndexModeSettingsProvider provider = withSyntheticSourceDemotionSupport(false);
         {
-            Settings settings = Settings.builder().put("index.mode", "columnar_logsdb").build();
+            Settings settings = Settings.builder().put("index.mode", "logsdb_columnar").build();
             boolean result = provider.getMappingHints(indexName, null, settings, List.of(new CompressedXContent(getMapping(mapping))))
                 .hasSyntheticSourceUsage();
             assertTrue(result);
             assertThat(newMapperServiceCounter.get(), equalTo(1));
         }
         {
-            Settings settings = Settings.builder().put("index.mode", "columnar_logsdb").build();
+            Settings settings = Settings.builder().put("index.mode", "logsdb_columnar").build();
             boolean result = provider.getMappingHints(indexName, null, settings, List.of()).hasSyntheticSourceUsage();
             assertTrue(result);
             assertThat(newMapperServiceCounter.get(), equalTo(2));
@@ -1409,7 +1409,7 @@ public class LogsdbIndexModeSettingsProviderTests extends ESTestCase {
 
     public void testColumnarLogsdbInjectsSortAndHostName() throws Exception {
         assumeTrue("columnar index modes feature flag must be enabled", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
-        var settings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR_LOGSDB).build();
+        var settings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.LOGSDB_COLUMNAR).build();
         var mappings = """
             {
                 "properties": {
@@ -1427,7 +1427,7 @@ public class LogsdbIndexModeSettingsProviderTests extends ESTestCase {
 
     public void testColumnarLogsdbSortOnExistingHostNameKeyword() throws Exception {
         assumeTrue("columnar index modes feature flag must be enabled", IndexMode.COLUMNAR_FEATURE_FLAG.isEnabled());
-        var settings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.COLUMNAR_LOGSDB).build();
+        var settings = Settings.builder().put(IndexSettings.MODE.getKey(), IndexMode.LOGSDB_COLUMNAR).build();
         var mappings = """
             {
                 "properties": {

@@ -427,7 +427,7 @@ public class LogsdbSortConfigIT extends ESSingleNodeTestCase {
 
     private void createDataStream(String dataStreamName, String mapping, UnaryOperator<Settings.Builder> settings) throws IOException {
         var putTemplateRequest = new TransportPutComposableIndexTemplateAction.Request("id");
-        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
+        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
         putTemplateRequest.indexTemplate(
             ComposableIndexTemplate.builder()
                 .indexPatterns(List.of(dataStreamName + "*"))

@@ -180,7 +180,7 @@ public class LogsdbRestIT extends ESRestTestCase {
             }
             """;
         String indexName = "test-foo";
-        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
+        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
         createIndex(indexName, Settings.builder().put("index.mode", indexMode).build(), mappings);
 
         int numDocs = 500;
@@ -282,7 +282,7 @@ public class LogsdbRestIT extends ESRestTestCase {
             }
             """;
         String indexName = "test-foo";
-        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
+        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
         createIndex(indexName, Settings.builder().put("index.mode", indexMode).build(), mappings);
 
         int messageSize = 256;
@@ -471,7 +471,7 @@ public class LogsdbRestIT extends ESRestTestCase {
             }
             """;
         String indexName = "test-foo";
-        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
+        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
         createIndex(indexName, Settings.builder().put("index.mode", indexMode).build(), mappings);
 
         int numDocs = 1000;

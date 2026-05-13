@@ -108,7 +108,7 @@ public class LogsIndexingIT extends ESSingleNodeTestCase {
     public void testStandard() throws Exception {
         String dataStreamName = "k8s";
         var putTemplateRequest = new TransportPutComposableIndexTemplateAction.Request("id");
-        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
+        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
         putTemplateRequest.indexTemplate(
             ComposableIndexTemplate.builder()
                 .indexPatterns(List.of(dataStreamName + "*"))
@@ -214,7 +214,7 @@ public class LogsIndexingIT extends ESSingleNodeTestCase {
     }
 
     public void testShrink() throws Exception {
-        String indexMode = randomBoolean() ? "logsdb" : "columnar_logsdb";
+        String indexMode = randomBoolean() ? "logsdb" : "logsdb_columnar";
         client().admin()
             .indices()
             .prepareCreate("my-logs")

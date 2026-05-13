@@ -9,14 +9,14 @@ setup:
       reason: "Support for columnar index modes required"
 
 ---
-create columnar_logsdb data stream with host.name as keyword:
+create logsdb_columnar data stream with host.name as keyword:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host.name:
@@ -39,14 +39,14 @@ create columnar_logsdb data stream with host.name as keyword:
   - is_true: acknowledged
 
 ---
-create columnar_logsdb data stream with host.name as keyword and timestamp as date:
+create logsdb_columnar data stream with host.name as keyword and timestamp as date:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host.name:
@@ -71,14 +71,14 @@ create columnar_logsdb data stream with host.name as keyword and timestamp as da
   - is_true: acknowledged
 
 ---
-create columnar_logsdb data stream with host.name as integer and timestamp as date:
+create logsdb_columnar data stream with host.name as integer and timestamp as date:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host.name:
@@ -111,19 +111,19 @@ create columnar_logsdb data stream with host.name as integer and timestamp as da
   - do:
       indices.get_settings:
         index: $backing_index
-  - match: { .$backing_index.settings.index.mode: columnar_logsdb }
+  - match: { .$backing_index.settings.index.mode: logsdb_columnar }
   - is_false: .$backing_index.settings.index.logsdb.add_host_name_field
   - match: { .$backing_index.settings.index.logsdb.sort_on_host_name: "true" }
 
 ---
-create columnar_logsdb data stream with no host.name and timestamp as date:
+create logsdb_columnar data stream with no host.name and timestamp as date:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 "@timestamp":
@@ -154,19 +154,19 @@ create columnar_logsdb data stream with no host.name and timestamp as date:
   - do:
       indices.get_settings:
         index: $backing_index
-  - match: { .$backing_index.settings.index.mode: columnar_logsdb }
+  - match: { .$backing_index.settings.index.mode: logsdb_columnar }
   - match: { .$backing_index.settings.index.logsdb.add_host_name_field: "true" }
   - match: { .$backing_index.settings.index.logsdb.sort_on_host_name: "true" }
 
 ---
-create columnar_logsdb data stream with host as keyword and timestamp as date:
+create logsdb_columnar data stream with host as keyword and timestamp as date:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host:
@@ -199,19 +199,19 @@ create columnar_logsdb data stream with host as keyword and timestamp as date:
   - do:
       indices.get_settings:
         index: $backing_index
-  - match: { .$backing_index.settings.index.mode: columnar_logsdb }
+  - match: { .$backing_index.settings.index.mode: logsdb_columnar }
   - is_false: .$backing_index.settings.index.logsdb.add_host_name_field
   - is_false: .$backing_index.settings.index.logsdb.sort_on_host_name
 
 ---
-create columnar_logsdb data stream with host as keyword:
+create logsdb_columnar data stream with host as keyword:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host:
@@ -234,14 +234,14 @@ create columnar_logsdb data stream with host as keyword:
   - is_true: acknowledged
 
 ---
-create columnar_logsdb data stream with host as text and multi fields:
+create logsdb_columnar data stream with host as text and multi fields:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host:
@@ -271,14 +271,14 @@ create columnar_logsdb data stream with host as text and multi fields:
   - is_true: acknowledged
 
 ---
-create columnar_logsdb data stream with host as text:
+create logsdb_columnar data stream with host as text:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host:
@@ -304,14 +304,14 @@ create columnar_logsdb data stream with host as text:
   - is_true: acknowledged
 
 ---
-create columnar_logsdb data stream with host as text and name as double:
+create logsdb_columnar data stream with host as text and name as double:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host:
@@ -340,14 +340,14 @@ create columnar_logsdb data stream with host as text and name as double:
   - is_true: acknowledged
 
 ---
-create columnar_logsdb data stream with timestamp object mapping:
+create logsdb_columnar data stream with timestamp object mapping:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host:
@@ -375,7 +375,7 @@ create columnar_logsdb data stream with timestamp object mapping:
   - match: { error.reason: "composable template [cl-logsdb-index-template] template after composition with component templates [cl-logsdb-mappings] is invalid" }
 
 ---
-create columnar_logsdb data stream with custom sorting without host.name:
+create logsdb_columnar data stream with custom sorting without host.name:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -387,7 +387,7 @@ create columnar_logsdb data stream with custom sorting without host.name:
               index:
                 sort.field: [ agent.id ]
                 sort.order: [ desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 agent.id:
@@ -419,7 +419,7 @@ create columnar_logsdb data stream with custom sorting without host.name:
   - match: { .$backing_index.mappings.properties.host.properties.name.type: null }
 
 ---
-create columnar_logsdb data stream with custom sorting and host object:
+create logsdb_columnar data stream with custom sorting and host object:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -431,7 +431,7 @@ create columnar_logsdb data stream with custom sorting and host object:
               index:
                 sort.field: [ host.hostname, host.region ]
                 sort.order: [ desc, desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host:
@@ -472,7 +472,7 @@ create columnar_logsdb data stream with custom sorting and host object:
   - match: { .$backing_index.mappings.properties.host.properties.name.type: integer }
 
 ---
-create columnar_logsdb data stream with custom sorting and dynamically mapped host.name:
+create logsdb_columnar data stream with custom sorting and dynamically mapped host.name:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -484,7 +484,7 @@ create columnar_logsdb data stream with custom sorting and dynamically mapped ho
               index:
                 sort.field: [ "agent.id", "@timestamp" ]
                 sort.order: [ desc, asc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 agent:
@@ -531,7 +531,7 @@ create columnar_logsdb data stream with custom sorting and dynamically mapped ho
   - match: { .$backing_index.mappings.properties.host.properties.id.type: text }
 
 ---
-create columnar_logsdb data stream with custom sorting and host.name object:
+create logsdb_columnar data stream with custom sorting and host.name object:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -543,7 +543,7 @@ create columnar_logsdb data stream with custom sorting and host.name object:
               index:
                 sort.field: [ "host.name.value", "@timestamp" ]
                 sort.order: [ desc, desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host:
@@ -581,7 +581,7 @@ create columnar_logsdb data stream with custom sorting and host.name object:
   - match: { .$backing_index.mappings.properties.host.properties.name.properties.alias.type: keyword }
 
 ---
-create columnar_logsdb data stream with default sorting on malformed host.name:
+create logsdb_columnar data stream with default sorting on malformed host.name:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -591,7 +591,7 @@ create columnar_logsdb data stream with default sorting on malformed host.name:
           template:
             settings:
               index:
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 agent:
@@ -639,7 +639,7 @@ create columnar_logsdb data stream with default sorting on malformed host.name:
   - match: { .$backing_index.mappings.properties.host.properties.id.type: text }
 
 ---
-create columnar_logsdb data stream with custom sorting and host.name date field:
+create logsdb_columnar data stream with custom sorting and host.name date field:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -651,7 +651,7 @@ create columnar_logsdb data stream with custom sorting and host.name date field:
               index:
                 sort.field: [ host.name, host.hostname ]
                 sort.order: [ desc, desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host:
@@ -686,7 +686,7 @@ create columnar_logsdb data stream with custom sorting and host.name date field:
   - match: { .$backing_index.mappings.properties.host.properties.name.type: date }
 
 ---
-create columnar_logsdb data stream with custom sorting and missing host.name field mapping:
+create logsdb_columnar data stream with custom sorting and missing host.name field mapping:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -698,7 +698,7 @@ create columnar_logsdb data stream with custom sorting and missing host.name fie
               index:
                 sort.field: [ host.hostname ]
                 sort.order: [ desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host:
@@ -731,7 +731,7 @@ create columnar_logsdb data stream with custom sorting and missing host.name fie
   - match: { .$backing_index.mappings.properties.host.properties.name: null }
 
 ---
-create columnar_logsdb data stream with custom sorting and host.name field without doc values:
+create logsdb_columnar data stream with custom sorting and host.name field without doc values:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -743,7 +743,7 @@ create columnar_logsdb data stream with custom sorting and host.name field witho
               index:
                 sort.field: [ "host.name", "@timestamp" ]
                 sort.order: [ desc, desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host:
@@ -767,7 +767,7 @@ create columnar_logsdb data stream with custom sorting and host.name field witho
   - match: { error.reason: "docvalues not found for index sort field:[host.name]" }
 
 ---
-create columnar_logsdb data stream with incompatible ignore_above on host.name:
+create logsdb_columnar data stream with incompatible ignore_above on host.name:
   - do:
       indices.put_index_template:
         name: cl-logsdb-index-template-ignore-above
@@ -779,7 +779,7 @@ create columnar_logsdb data stream with incompatible ignore_above on host.name:
               index:
                 sort.field: [ host.name ]
                 sort.order: [ desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host.name:
@@ -809,7 +809,7 @@ create columnar_logsdb data stream with incompatible ignore_above on host.name:
   - match: { .$backing_index.mappings.properties.host.properties.name.ignore_above: 128 }
 
 ---
-create columnar_logsdb data stream with no sorting and host.name as text:
+create logsdb_columnar data stream with no sorting and host.name as text:
   - do:
       indices.put_index_template:
         name: cl-logsdb-index-template-non-keyword
@@ -818,7 +818,7 @@ create columnar_logsdb data stream with no sorting and host.name as text:
           priority: 10000
           template:
             settings:
-              mode: columnar_logsdb
+              mode: logsdb_columnar
             mappings:
               properties:
                 host.name:
@@ -846,7 +846,7 @@ create columnar_logsdb data stream with no sorting and host.name as text:
   - match: { .$backing_index.mappings.properties.host.properties.name.type: text }
 
 ---
-create columnar_logsdb data stream without index sorting and ignore_above on host.name:
+create logsdb_columnar data stream without index sorting and ignore_above on host.name:
   - do:
       indices.put_index_template:
         name: cl-logsdb-index-template-ignore-above-override
@@ -856,7 +856,7 @@ create columnar_logsdb data stream without index sorting and ignore_above on hos
           template:
             settings:
               index:
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host.name:
@@ -886,7 +886,7 @@ create columnar_logsdb data stream without index sorting and ignore_above on hos
   - match: { .$backing_index.mappings.properties.host.properties.name.ignore_above: 128 }
 
 ---
-create columnar_logsdb data stream with host.name as alias and sorting on it:
+create logsdb_columnar data stream with host.name as alias and sorting on it:
   - do:
       indices.put_index_template:
         name: cl-logsdb-index-template-alias
@@ -897,7 +897,7 @@ create columnar_logsdb data stream with host.name as alias and sorting on it:
               index:
                 sort.field: [ host.name ]
                 sort.order: [ desc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host.name:
@@ -916,7 +916,7 @@ create columnar_logsdb data stream with host.name as alias and sorting on it:
   - match: { error.reason: "Cannot use alias [host.name] as an index sort field" }
 
 ---
-create columnar_logsdb data stream with multi-fields on host.name:
+create logsdb_columnar data stream with multi-fields on host.name:
   - do:
       indices.put_index_template:
         name: cl-logsdb-index-template-multi-fields
@@ -927,7 +927,7 @@ create columnar_logsdb data stream with multi-fields on host.name:
               index:
                 sort.field: [ host.name.keyword ]
                 sort.order: [ asc ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 host.name:
@@ -957,7 +957,7 @@ create columnar_logsdb data stream with multi-fields on host.name:
   - match: { .$backing_index.mappings.properties.host.properties.name.fields.keyword.type: keyword }
 
 ---
-create columnar_logsdb data stream with multi-fields on host.name and no sorting:
+create logsdb_columnar data stream with multi-fields on host.name and no sorting:
   - do:
       indices.put_index_template:
         name: cl-logsdb-no-sort-multi-fields-template
@@ -965,7 +965,7 @@ create columnar_logsdb data stream with multi-fields on host.name and no sorting
           index_patterns: [ cl-logsdb-no-sort-multi-fields ]
           template:
             settings:
-              mode: columnar_logsdb
+              mode: logsdb_columnar
             mappings:
               properties:
                 host.name:
@@ -995,7 +995,7 @@ create columnar_logsdb data stream with multi-fields on host.name and no sorting
   - match: { .$backing_index.mappings.properties.host.properties.name.type: text }
 
 ---
-create columnar_logsdb data stream with custom empty sorting:
+create logsdb_columnar data stream with custom empty sorting:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -1007,7 +1007,7 @@ create columnar_logsdb data stream with custom empty sorting:
               index:
                 sort.field: [ ]
                 sort.order: [ ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 hostname:
@@ -1035,7 +1035,7 @@ create columnar_logsdb data stream with custom empty sorting:
   - match: { .$backing_index.mappings.properties.host: null }
 
 ---
-create columnar_logsdb data stream with custom sorting on timestamp:
+create logsdb_columnar data stream with custom sorting on timestamp:
   - do:
       indices.put_index_template:
         name: cl-logs-template
@@ -1047,7 +1047,7 @@ create columnar_logsdb data stream with custom sorting on timestamp:
               index:
                 sort.field: [ "@timestamp" ]
                 sort.order: [ "asc" ]
-                mode: columnar_logsdb
+                mode: logsdb_columnar
             mappings:
               properties:
                 hostname:
@@ -1074,14 +1074,14 @@ create columnar_logsdb data stream with custom sorting on timestamp:
   - match: { .$backing_index.mappings.properties.@timestamp.type: date }
 
 ---
-create columnar_logsdb data stream with timestamp mixed date_nanos and date fields:
+create logsdb_columnar data stream with timestamp mixed date_nanos and date fields:
   - do:
       cluster.put_component_template:
         name: "cl-logsdb-mappings"
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host.name:
@@ -1120,7 +1120,7 @@ create columnar_logsdb data stream with timestamp mixed date_nanos and date fiel
         body:
           template:
             settings:
-              mode: "columnar_logsdb"
+              mode: "logsdb_columnar"
             mappings:
               properties:
                 host.name:
@@ -1169,7 +1169,7 @@ create columnar_logsdb data stream with timestamp mixed date_nanos and date fiel
   - match: { values.0: [ "2025-09-09T14:00:00.000Z", "2025-09-09T00:00:00.000Z" ] }
 
 ---
-rollover columnar_logsdb data stream with host as keyword:
+rollover logsdb_columnar data stream with host as keyword:
   - do:
       indices.put_index_template:
         name: "cl-example"
@@ -1177,7 +1177,7 @@ rollover columnar_logsdb data stream with host as keyword:
           "index_patterns": [ "cl-example*" ]
           "template":
             "settings":
-              "mode": "columnar_logsdb"
+              "mode": "logsdb_columnar"
             "mappings":
               "properties":
                 "host":
