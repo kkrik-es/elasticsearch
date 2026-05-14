@@ -242,7 +242,7 @@ public class DataStreamGetWriteIndexTests extends ESTestCase {
                 ScriptCompiler.NONE,
                 DEFAULT_INDEX_SETTINGS
             ).build(MapperBuilderContext.root(false, false));
-            RootObjectMapper.Builder root = new RootObjectMapper.Builder("_doc", ObjectMapper.Defaults.SUBOBJECTS);
+            RootObjectMapper.Builder root = new RootObjectMapper.Builder("_doc");
             root.add(
                 new DateFieldMapper.Builder(
                     "@timestamp",

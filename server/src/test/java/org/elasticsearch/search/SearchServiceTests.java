@@ -617,7 +617,7 @@ public class SearchServiceTests extends IndexShardTestCase {
         Predicate<String> indexNameMatcher = pattern -> Regex.simpleMatch(pattern, "index");
 
         MapperBuilderContext root = MapperBuilderContext.root(false, false);
-        RootObjectMapper.Builder builder = new RootObjectMapper.Builder("_doc", ObjectMapper.Defaults.SUBOBJECTS);
+        RootObjectMapper.Builder builder = new RootObjectMapper.Builder("_doc");
         Mapping mapping = new Mapping(
             builder.build(MapperBuilderContext.root(false, false)),
             new MetadataFieldMapper[0],
