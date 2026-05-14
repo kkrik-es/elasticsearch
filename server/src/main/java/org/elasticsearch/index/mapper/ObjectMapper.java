@@ -54,7 +54,7 @@ public class ObjectMapper extends Mapper {
     public static final String CONTENT_TYPE = "object";
     static final String STORE_ARRAY_SOURCE_PARAM = "store_array_source";
 
-   public enum Subobjects {
+    public enum Subobjects {
         ENABLED(Boolean.TRUE),
         DISABLED(Boolean.FALSE);
 
