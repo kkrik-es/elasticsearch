@@ -575,3 +575,6 @@ tests:
 - class: org.elasticsearch.packaging.test.BootstrapCheckTests
   method: test20RunWithBootstrapChecks
   issue: https://github.com/elastic/elasticsearch/issues/149040
+- class: org.elasticsearch.multiproject.test.CoreWithMultipleProjectsClientYamlTestSuiteIT
+  method: test {yaml=data_stream/110_update_by_query/Update by query from data stream}
+  issue: https://github.com/elastic/elasticsearch/issues/149042
