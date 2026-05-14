@@ -279,7 +279,10 @@ public class LogsdbSortConfigIT extends ESSingleNodeTestCase {
                     // logsdb_columnar defaults to [subobjects:false], allowing [host.name] injection when [host] is a mapped field
                     assertThat(IndexSortConfig.INDEX_SORT_FIELD_SETTING.get(settings), equalTo(List.of("host.name", "@timestamp")));
                     assertThat(IndexSortConfig.INDEX_SORT_ORDER_SETTING.get(settings), equalTo(List.of(SortOrder.ASC, SortOrder.DESC)));
-                    assertThat(IndexSortConfig.INDEX_SORT_MODE_SETTING.get(settings), equalTo(List.of(MultiValueMode.MIN, MultiValueMode.MAX)));
+                    assertThat(
+                        IndexSortConfig.INDEX_SORT_MODE_SETTING.get(settings),
+                        equalTo(List.of(MultiValueMode.MIN, MultiValueMode.MAX))
+                    );
                     assertThat(IndexSortConfig.INDEX_SORT_MISSING_SETTING.get(settings), equalTo(List.of("_last", "_last")));
                 } else {
                     // logsdb defaults to [subobjects:true], so [host.name] can't be injected when [host] is a mapped field
