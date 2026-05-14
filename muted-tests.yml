@@ -571,3 +571,6 @@ tests:
 - class: org.elasticsearch.xpack.security.ReindexRelocationWithSecurityIT
   method: testReindexRelocatesWhenCoordinatorShutsDown
   issue: https://github.com/elastic/elasticsearch/issues/149055
+- class: org.elasticsearch.xpack.stateless.StatelessCommitServiceIT
+  method: testRetainCommitForReadersAfterShardMovedAway
+  issue: https://github.com/elastic/elasticsearch/issues/149083
