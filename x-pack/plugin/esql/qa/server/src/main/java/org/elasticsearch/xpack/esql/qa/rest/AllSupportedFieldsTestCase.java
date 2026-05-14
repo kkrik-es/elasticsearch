@@ -120,12 +120,6 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
             MappedFieldType.FieldExtractPreference.STORED
         )) {
             for (IndexMode indexMode : IndexMode.values()) {
-                // TODO: Support COLUMNAR and LOGSDB_COLUMNAR modes in BWC tests
-                // These modes are currently skipped to avoid "No enum constant" errors in mixed-version clusters
-                // where older nodes don't have these enum values yet.
-                if (indexMode == IndexMode.COLUMNAR || indexMode == IndexMode.LOGSDB_COLUMNAR) {
-                    continue;
-                }
                 args.add(new Object[] { extractPreference, indexMode });
             }
         }
@@ -186,19 +180,6 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
 
     protected boolean fetchDenseVectorAggMetricDoubleIfVersion() throws IOException {
         return clusterHasCapability("GET", "/_query", List.of(), List.of("DENSE_VECTOR_AGG_METRIC_DOUBLE_IF_VERSION")).orElse(false);
-    }
-
-    private static Boolean vectordbDocumentIndexModeSupported;
-
-    private boolean vectordbDocumentIndexModeSupported() throws IOException {
-        if (vectordbDocumentIndexModeSupported == null) {
-            vectordbDocumentIndexModeSupported = fetchVectordbDocumentIndexModeSupported();
-        }
-        return vectordbDocumentIndexModeSupported;
-    }
-
-    protected boolean fetchVectordbDocumentIndexModeSupported() throws IOException {
-        return clusterHasCapability("PUT", "/{index}", List.of(), List.of("vectordb_document_index_mode")).orElse(false);
     }
 
     protected boolean lookupJoinOnAllIndicesSupported() throws IOException {
@@ -270,7 +251,18 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
     @Before
     public void createIndices() throws IOException {
         if (indexMode == IndexMode.VECTORDB_DOCUMENT) {
-            assumeTrue("Cluster has nodes that do not support index.mode=vectordb_document", vectordbDocumentIndexModeSupported());
+            assumeTrue("vectordb_document index mode requires a snapshot build", Build.current().isSnapshot());
+            assumeTrue(
+                "Cluster has nodes that do not support index.mode=vectordb_document",
+                minVersion().supports(IndexMode.VECTORDB_DOCUMENT_INDEX_MODE)
+            );
+        }
+        if (indexMode == IndexMode.COLUMNAR || indexMode == IndexMode.LOGSDB_COLUMNAR) {
+            assumeTrue("Columnar index modes require a snapshot build", Build.current().isSnapshot());
+            assumeTrue(
+                "Cluster has nodes that do not support columnar index modes",
+                minVersion().supports(IndexMode.COLUMNAR_INDEX_MODES_ADDED)
+            );
         }
         if (supportsNodeAssignment()) {
             for (Map.Entry<String, NodeInfo> e : localNodeToInfo().entrySet()) {
