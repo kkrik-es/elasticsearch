@@ -2414,6 +2414,13 @@ public class EsqlCapabilities {
         EXTERNAL_CSV_HEADER_ROW_OPTION(DataSourceMetadata.ESQL_EXTERNAL_DATASOURCES_FEATURE_FLAG.isEnabled()),
 
         /**
+         * Per-file planner-resolved read schema is threaded down to runtime readers via
+         * {@code FileSplit.readSchema()}. Pins each file's column layout to the planner's view,
+         * preventing reader self-inference that drifts across files in a multi-file glob.
+         */
+        EXTERNAL_SOURCE_READ_SCHEMA(DataSourceMetadata.ESQL_EXTERNAL_DATASOURCES_FEATURE_FLAG.isEnabled()),
+
+        /**
          * {@code FROM <dataset>} resolved through the same pipeline as {@code FROM <index>} (Phase 1: dataset-only patterns).
          * Gated on the same flag as {@link #EXTERNAL_COMMAND}.
          */
