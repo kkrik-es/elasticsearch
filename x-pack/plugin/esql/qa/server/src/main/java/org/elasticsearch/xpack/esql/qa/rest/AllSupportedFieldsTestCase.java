@@ -670,6 +670,10 @@ public class AllSupportedFieldsTestCase extends ESRestTestCase {
     }
 
     protected String allIndexPattern() {
+        if (indexMode == IndexMode.LOGSDB) {
+            // logsdb* would also match logsdb_columnar* indices created by the LOGSDB_COLUMNAR test setup
+            return "%mode%*,-" + IndexMode.LOGSDB_COLUMNAR.getName() + "*";
+        }
         return "%mode%*";
     }
 
