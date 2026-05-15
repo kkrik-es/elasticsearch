@@ -200,8 +200,8 @@ create logsdb_columnar data stream with host as keyword and timestamp as date:
       indices.get_settings:
         index: $backing_index
   - match: { .$backing_index.settings.index.mode: logsdb_columnar }
-  - is_false: .$backing_index.settings.index.logsdb.add_host_name_field
-  - is_false: .$backing_index.settings.index.logsdb.sort_on_host_name
+  - is_true: .$backing_index.settings.index.logsdb.add_host_name_field
+  - is_true: .$backing_index.settings.index.logsdb.sort_on_host_name
 
 ---
 create logsdb_columnar data stream with host as keyword:
@@ -1213,7 +1213,7 @@ rollover logsdb_columnar data stream with host as keyword:
   - do:
       indices.get_settings:
         index: $backing_index_0
-  - is_false: .$backing_index_0.settings.index.logsdb.add_host_name_field
+  - is_true: .$backing_index_0.settings.index.logsdb.add_host_name_field
 
   - do:
       indices.get_mapping:
@@ -1223,7 +1223,7 @@ rollover logsdb_columnar data stream with host as keyword:
   - do:
       indices.get_settings:
         index: $backing_index_1
-  - is_false: .$backing_index_1.settings.index.logsdb.add_host_name_field
+  - is_true: .$backing_index_1.settings.index.logsdb.add_host_name_field
 
   - do:
       indices.get_mapping:
